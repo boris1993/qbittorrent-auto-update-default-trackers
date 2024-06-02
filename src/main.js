@@ -23,10 +23,7 @@ async function main() {
         await login();
 
         console.info(`Creating the schedule job with cron ${cron}`);
-        schedule.scheduleJob(cron, async () => {
-            const trackers = await downloadTrackerList();
-            await setDefaultTrackers(trackers);
-        });
+        schedule.scheduleJob(cron, performUpdateDefaultTracker);
     } catch (error) {
         console.error(error);
     }
@@ -45,14 +42,6 @@ function init() {
 
     axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
     axios.defaults.timeout = 5000;
-}
-
-async function downloadTrackerList() {
-    console.info('Downloading trackers list');
-    const trackerListUrl = process.env[constants.environmentVariables.trackerList] || constants.defaults.trackerList;
-    const response = await axios.get(trackerListUrl);
-    const trackers = response.data;
-    return trackers.split(os.EOL).filter(line => line).join(',');
 }
 
 async function login() {
@@ -78,6 +67,23 @@ async function logout() {
         `${qBittorrentEndpoint}${constants.api.logout}`,
     );
     console.info('Logged out');
+}
+
+async function performUpdateDefaultTracker() {
+    try {
+        const trackerList = await downloadTrackerList();
+        await setDefaultTrackers(trackerList);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function downloadTrackerList() {
+    console.info('Downloading trackers list');
+    const trackerListUrl = process.env[constants.environmentVariables.trackerList] || constants.defaults.trackerList;
+    const response = await axios.get(trackerListUrl);
+    const trackers = response.data;
+    return trackers.split(os.EOL).filter(line => line).join(',');
 }
 
 async function setDefaultTrackers(defaultTrackers) {
