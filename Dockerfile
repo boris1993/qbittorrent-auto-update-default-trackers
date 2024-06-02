@@ -5,9 +5,10 @@ ENV TZ=UTC
 WORKDIR /app
 COPY package.json .
 COPY pnpm-lock.yaml .
-COPY src ./src
 
 RUN corepack enable
 RUN pnpm install
+
+COPY src ./src
 
 CMD ["node", "/app/src/main.js"]
