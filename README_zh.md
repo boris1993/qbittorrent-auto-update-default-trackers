@@ -1,5 +1,7 @@
 qBittorrent Tracker Auto Add
 --
+[English](README.md)
+
 定时更新qBittorrent中自动添加到新torrent的tracker。
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/boris1993/qbittorrent-tracker-auto-add/build.yml)

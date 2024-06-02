@@ -1,5 +1,7 @@
 qBittorrent Tracker Auto Add
 --
+[中文](README_zh.md)
+
 Automatically update the list of trackers that will be added to new torrents in qBittorrent.
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/boris1993/qbittorrent-tracker-auto-add/build.yml)
