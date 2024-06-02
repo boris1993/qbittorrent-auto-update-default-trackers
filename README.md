@@ -4,10 +4,16 @@ qBittorrent Tracker Auto Add
 
 Automatically update the list of trackers that will be added to new torrents in qBittorrent.
 
+![GitHub License](https://img.shields.io/github/license/boris1993/qbittorrent-tracker-auto-add)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/boris1993/qbittorrent-tracker-auto-add/build.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/boris1993/qbittorrent-tracker-auto-add)
+![Docker Image Version](https://img.shields.io/docker/v/boris1993/qbittorrent-tracker-auto-add)
+![Docker Image Size](https://img.shields.io/docker/image-size/boris1993/qbittorrent-tracker-auto-add)
 
 ## Usage
+You can also download from Aliyun with image `registry.cn-hangzhou.aliyuncs.com/boris1993/qbittorrent-tracker-auto-add`
+if you have difficulty accessing to Docker Hub.
+
 ### Docker
 ```shell
 docker run \

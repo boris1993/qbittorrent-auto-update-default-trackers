@@ -4,10 +4,15 @@ qBittorrent Tracker Auto Add
 
 定时更新qBittorrent中自动添加到新torrent的tracker。
 
+![GitHub License](https://img.shields.io/github/license/boris1993/qbittorrent-tracker-auto-add)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/boris1993/qbittorrent-tracker-auto-add/build.yml)
 ![Docker Pulls](https://img.shields.io/docker/pulls/boris1993/qbittorrent-tracker-auto-add)
+![Docker Image Version](https://img.shields.io/docker/v/boris1993/qbittorrent-tracker-auto-add)
+![Docker Image Size](https://img.shields.io/docker/image-size/boris1993/qbittorrent-tracker-auto-add)
 
 ## 用法
+如果访问Docker Hub有困难，那么你也可以使用托管在阿里云的镜像`registry.cn-hangzhou.aliyuncs.com/boris1993/qbittorrent-tracker-auto-add`。
+
 ### Docker
 ```shell
 docker run -d dock\
