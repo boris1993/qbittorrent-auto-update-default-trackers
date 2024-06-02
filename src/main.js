@@ -25,7 +25,7 @@ async function main() {
         console.info(`Creating the schedule job with cron ${cron}`);
         schedule.scheduleJob(cron, performUpdateDefaultTracker);
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
     }
 }
 
@@ -74,7 +74,7 @@ async function performUpdateDefaultTracker() {
         const trackerList = await downloadTrackerList();
         await setDefaultTrackers(trackerList);
     } catch (error) {
-        console.error(error);
+        console.error(error.message);
     }
 }
 
