@@ -6,9 +6,9 @@ on:
     branches:
       - master
     tags:
-      - *
+      - '*'
     paths-ignore:
-      - ".github/**"
+#      - ".github/**"
       - "*.md"
       - "LICENSE"
 
