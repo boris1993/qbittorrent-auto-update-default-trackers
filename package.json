@@ -1,0 +1,22 @@
+{
+	"name": "qbittorrent-auto-update-default-trackers",
+	"description": "Automatically update the qBittorrent default trackers",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": {
+		"name": "boris1993",
+		"url": "https://github.com/boris1993"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/boris1993/qbittorrent-tracker-auto-add.git"
+	},
+	"dependencies": {
+		"axios": "^1.7.2",
+		"https-proxy-agent": "^7.0.4",
+		"node-schedule": "^2.1.1"
+	},
+	"scripts": {
+		"run": "node src/main.js"
+	}
+}
