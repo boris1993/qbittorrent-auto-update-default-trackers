@@ -21,12 +21,12 @@ async function main() {
     try {
         init();
         await login();
-
-        console.info(`Creating the schedule job with cron ${cron}`);
-        schedule.scheduleJob(cron, performUpdateDefaultTracker);
     } catch (error) {
         console.error(error.message);
     }
+
+    console.info(`Creating the schedule job with cron ${cron}`);
+    schedule.scheduleJob(cron, performUpdateDefaultTracker);
 }
 
 function init() {
