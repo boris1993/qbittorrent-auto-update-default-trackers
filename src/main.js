@@ -24,7 +24,7 @@ process.on('SIGINT', async () => {
 axiosRetry(axios, {
     retries: 3,
     retryCondition(error) {
-        return 400 <= error.response.status && error.response.status <= 599;
+        return error.response && (400 <= error.response.status && error.response.status <= 599);
     },
     onRetry: async (retryCount, error, requestConfig) => {
         if (error.response.status === 403) {
@@ -98,7 +98,11 @@ async function performUpdateDefaultTracker() {
         await setDefaultTrackers(trackerList);
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.error(`Axios error ${error.code} occurred when calling ${error.request.path}.`);
+            if (error.response) {
+                console.error(`Axios error ${error.code} occurred when calling ${error.request.path}.`);
+            } else {
+                console.error(`Axios error ${error.code} occurred.`);
+            }
         } else {
             console.error(error.message);
         }
