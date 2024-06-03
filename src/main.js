@@ -12,6 +12,7 @@ let qBittorrentEndpoint;
 let qBittorrentUsername;
 let qBittorrentPassword;
 let cron;
+let sid;
 
 process.on('SIGINT', async () => {
     console.info('Shutting down');
@@ -22,14 +23,18 @@ process.on('SIGINT', async () => {
 
 axiosRetry(axios, {
     retries: 3,
-    retryDelay: axiosRetry.exponentialDelay,
     retryCondition(error) {
         return 400 <= error.response.status && error.response.status <= 599;
     },
-    onRetry: async (retryCount, error, _) => {
+    onRetry: async (retryCount, error, requestConfig) => {
         if (error.response.status === 403) {
-            console.info('SID cookie invalid. Re-logging in.');
+            console.info(`SID cookie invalid. Re-logging in. Retry count: ${retryCount}.`);
             await login();
+
+            // Should update the SID in the original request
+            requestConfig.headers['Cookie'] = `SID=${sid}`;
+
+            console.info('Retrying the request.');
         }
     },
 });
@@ -38,7 +43,7 @@ async function main() {
     init();
     await login();
 
-    console.info(`Creating the schedule job with cron ${cron}`);
+    console.info(`Creating the schedule job with cron ${cron}.`);
     schedule.scheduleJob(cron, performUpdateDefaultTracker);
 }
 
@@ -51,14 +56,14 @@ function init() {
         throw new Error('Invalid configuration: endpoint or username or password is not specified.');
     }
 
-    cron = process.env[constants.environmentVariables.cron] || constants.defaults.dailyCron;
+    cron = process.env[constants.environmentVariables.cron] || constants.defaults.hourlyCron;
 
     axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
     axios.defaults.timeout = 5000;
 }
 
 async function login() {
-    console.info('Logging in');
+    console.info('Logging in.');
     const response = await axios.post(
         `${qBittorrentEndpoint}${constants.api.login}`,
         {
@@ -69,21 +74,22 @@ async function login() {
 
     const sidCookieValue = response.headers['set-cookie'].filter(cookie => cookie.includes('SID'))[0];
     if (!sidCookieValue) {
-        throw new Error('Cookie SID not found');
+        throw new Error('Cookie SID not found.');
     }
 
     let cookie = Cookie.parse(sidCookieValue);
     console.debug(`SID=${cookie.value}`);
 
-    console.info('Setting SID cookie');
-    axios.defaults.headers.common['Cookie'] = `${cookie.key}=${cookie.value}`;
+    console.info('Saving SID cookie.');
+    sid = cookie.value;
 }
 
 async function logout() {
-    await axios.post(
-        `${qBittorrentEndpoint}${constants.api.logout}`,
-    );
-    console.info('Logged out');
+    try {
+        await axios.post(`${qBittorrentEndpoint}${constants.api.logout}`);
+    } catch (ignored) {}
+
+    console.info('Logged out.');
 }
 
 async function performUpdateDefaultTracker() {
@@ -92,7 +98,7 @@ async function performUpdateDefaultTracker() {
         await setDefaultTrackers(trackerList);
     } catch (error) {
         if (error instanceof AxiosError) {
-            console.error(`Axios error ${error.code} occurred when calling ${error.request.path}`);
+            console.error(`Axios error ${error.code} occurred when calling ${error.request.path}.`);
         } else {
             console.error(error.message);
         }
@@ -100,7 +106,7 @@ async function performUpdateDefaultTracker() {
 }
 
 async function downloadTrackerList() {
-    console.info('Downloading trackers list');
+    console.info('Downloading trackers list.');
     const trackerListUrl = process.env[constants.environmentVariables.trackerList] || constants.defaults.trackerList;
     const response = await axios.get(trackerListUrl);
     const trackers = response.data;
@@ -108,12 +114,17 @@ async function downloadTrackerList() {
 }
 
 async function setDefaultTrackers(defaultTrackers) {
-    console.info('Updating default trackers');
+    console.info('Updating default trackers.');
 
     await axios.post(
         `${qBittorrentEndpoint}${constants.api.setPreferences}`,
         {
             json: `{"add_trackers_enabled": true, "add_trackers": "${defaultTrackers}"}`
+        },
+        {
+            headers: {
+                'Cookie': `SID=${sid}`
+            }
         }
     )
 }
