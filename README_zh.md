@@ -26,20 +26,25 @@ docker run -d dock\
 
 ### Docker Compose
 ```yaml
----
 version: '3'
 
 services:
-  qbittorrent-tracker-add:
-    image: ''
+  qbittorrent-tracker-auto-add:
+    image: boris1993/qbittorrent-tracker-auto-add:latest
+    container_name: qbittorrent-tracker-auto-add
+    restart: always
+    environment:
+      QBITTORRENT_ENDPOINT: 'http://127.0.0.1:8080'
+      QBITTORRENT_USERNAME: admin
+      QBITTORRENT_PASSWORD: password
 ```
 
 ### 可选环境变量参数
 
 - `TZ` - 指定容器中的时区。默认为UTC。
-- `CRON` - 以`crontab`格式指定更新频率。默认每小时运行一次 (`0 * * * *`)。
+- `CRON` - 以`crontab`格式指定更新频率。默认每天00:00运行一次 (`0 * * * *`)。
 - `QBITTORRENT_TRACKER_LIST` - 指定要下载的tracker列表。默认下载[ngosang/trackerslist提供的trackers_best.txt](https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt)。
-- `http_proxy` - 指定HTTP代理来解决因为网络质量导致的tracker列表下载失败的问题。
+- `all_proxy` - 指定HTTP代理来解决因为网络质量导致的tracker列表下载失败的问题。
 
 ## 许可协议
 该软件依[MIT](LICENSE)协议开放源代码。
