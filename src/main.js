@@ -2,6 +2,9 @@
 
 const os = require('os');
 const axios = require('axios').default;
+const {AxiosError} = require("axios");
+const axiosRetry = require('axios-retry').default;
+const {Cookie} = require('tough-cookie');
 const schedule = require('node-schedule');
 const constants = require('./constants');
 
@@ -17,13 +20,23 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
+axiosRetry(axios, {
+    retries: 3,
+    retryDelay: axiosRetry.exponentialDelay,
+    retryCondition(error) {
+        return 400 <= error.response.status && error.response.status <= 599;
+    },
+    onRetry: async (retryCount, error, _) => {
+        if (error.response.status === 403) {
+            console.info('SID cookie invalid. Re-logging in.');
+            await login();
+        }
+    },
+});
+
 async function main() {
-    try {
-        init();
-        await login();
-    } catch (error) {
-        console.error(error.message);
-    }
+    init();
+    await login();
 
     console.info(`Creating the schedule job with cron ${cron}`);
     schedule.scheduleJob(cron, performUpdateDefaultTracker);
@@ -38,7 +51,7 @@ function init() {
         throw new Error('Invalid configuration: endpoint or username or password is not specified.');
     }
 
-    cron = process.env[constants.environmentVariables.cron] || constants.defaults.hourlyCron;
+    cron = process.env[constants.environmentVariables.cron] || constants.defaults.dailyCron;
 
     axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
     axios.defaults.timeout = 5000;
@@ -54,12 +67,16 @@ async function login() {
         }
     );
 
-    const sid = response.headers['set-cookie']
-        .filter(cookie => cookie.includes('SID'))
-        .map(sidCookie => sidCookie.split(';')[0].trim())[0];
+    const sidCookieValue = response.headers['set-cookie'].filter(cookie => cookie.includes('SID'))[0];
+    if (!sidCookieValue) {
+        throw new Error('Cookie SID not found');
+    }
+
+    let cookie = Cookie.parse(sidCookieValue);
+    console.debug(`SID=${cookie.value}`);
 
     console.info('Setting SID cookie');
-    axios.defaults.headers.common['Cookie'] = `${sid}`;
+    axios.defaults.headers.common['Cookie'] = `${cookie.key}=${cookie.value}`;
 }
 
 async function logout() {
@@ -74,7 +91,11 @@ async function performUpdateDefaultTracker() {
         const trackerList = await downloadTrackerList();
         await setDefaultTrackers(trackerList);
     } catch (error) {
-        console.error(error.message);
+        if (error instanceof AxiosError) {
+            console.error(`Axios error ${error.code} occurred when calling ${error.request.path}`);
+        } else {
+            console.error(error.message);
+        }
     }
 }
 
