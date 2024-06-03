@@ -42,7 +42,7 @@ services:
 ### 可选环境变量参数
 
 - `TZ` - 指定容器中的时区。默认为UTC。
-- `CRON` - 以`crontab`格式指定更新频率。默认每天00:00运行一次 (`0 * * * *`)。
+- `CRON` - 以`crontab`格式指定更新频率。默认每小时运行一次 (`0 * * * *`)。
 - `QBITTORRENT_TRACKER_LIST` - 指定要下载的tracker列表。默认下载[ngosang/trackerslist提供的trackers_best.txt](https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt)。
 - `all_proxy` - 指定HTTP代理来解决因为网络质量导致的tracker列表下载失败的问题。
 

@@ -42,7 +42,7 @@ services:
 ### Optional Parameters
 
 - `TZ` - Specify the timezone in the container. Default is UTC.
-- `CRON` - Specify the run schedule in the crontab format. Default is daily on 00:00 (`0 0 * * *`). 
+- `CRON` - Specify the run schedule in the crontab format. Default is hourly (`0 * * * *`). 
 - `QBITTORRENT_TRACKER_LIST` - Specify the tracker list to be downloaded. Default is [the best trackers from ngosang/trackerslist](https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt).
 - `all_proxy` - Specify the HTTP proxy if you have difficulty downloading the tracker list.
 
