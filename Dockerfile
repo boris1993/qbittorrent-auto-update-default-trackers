@@ -1,6 +1,7 @@
 FROM node:lts-alpine
 
 ENV TZ=UTC
+ENV NODE_ENV=production
 
 WORKDIR /app
 COPY package.json .
