@@ -14,7 +14,7 @@ const api = {
 
 const defaults = {
     trackerList: 'https://raw.githubusercontent.com/ngosang/trackerslist/master/trackers_best.txt',
-    dailyCron: '0 0 * * *',
+    hourlyCron: '0 * * * *',
 }
 
 module.exports = {
